@@ -1,5 +1,6 @@
-# Spring Security OAuth2.0
+# Spring Cloud Security OAuth2.0
 
+Spring Cloud Security OAuth2.0 授权
 
 ## 授权码模式
 
@@ -9,7 +10,7 @@
 ```
 /uaa/oauth/authorize?client_id=c1&response_type=code&scope=all&redirect_url=http://www.baidu.com/
 ```
->参数:
+参数:
 * client_id: 客户端标识
 * response_type: 授权码模式固定位code
 * scope:客户端权限
@@ -76,4 +77,12 @@ https://www.baidu.com/#access_token=6b94c4c1-1803-484e-b5da-943b96266ff1&token_t
 
 ```
 /uaa/oauth/token?client_id=c1&client_secret=secret&grant_type=client_credentials
+```
+## 启动order测试
+
+GET http://localhost:53021/order/r1
+
+首先申请Token,将Token放在请求头中,访问资源服务接口
+```
+Authorization:Bearer 6b94c4c1-1803-484e-b5da-943b96266ff1
 ```
