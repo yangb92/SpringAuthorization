@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: order-service
+
+server:
+  port: 53021
+  servlet:
+    context-path: /order
