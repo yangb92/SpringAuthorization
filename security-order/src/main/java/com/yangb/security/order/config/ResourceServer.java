@@ -22,8 +22,6 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServer extends ResourceServerConfigurerAdapter {
 
-    private String SIGN_KEY = "123";
-
     // 资源ID
     public static final String RESOURCE_ID = "res1";
 

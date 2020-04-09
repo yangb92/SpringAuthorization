@@ -1,5 +1,6 @@
-# Spring Security OAuth2.0
+# Spring Security OAuth2.0 JWT
 
+使用 JWT 令牌
 
 ## 授权码模式
 
@@ -33,11 +34,12 @@
 
 ```json
 {
-    "access_token": "6b94c4c1-1803-484e-b5da-943b96266ff1",
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsicmVzMSIsInJlczIiXSwidXNlcl9uYW1lIjoibGlzaSIsInNjb3BlIjpbImFsbCJdLCJleHAiOjE1ODY0MzE1ODYsImF1dGhvcml0aWVzIjpbInAxIl0sImp0aSI6IjlmNzAwMjU3LWM4MWUtNDU3MC1hYjU0LWVjMjU1N2JhYjgyNyIsImNsaWVudF9pZCI6ImMxIn0.8QUpIuvZrM2QjfnnR4hxUGMf7nznlxKtouYP8kC6HnI",
     "token_type": "bearer",
-    "refresh_token": "8b4a2631-ef09-4145-9f32-f96b0904e5d8",
-    "expires_in": 43199,
-    "scope": "all"
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsicmVzMSIsInJlczIiXSwidXNlcl9uYW1lIjoibGlzaSIsInNjb3BlIjpbImFsbCJdLCJhdGkiOiI5ZjcwMDI1Ny1jODFlLTQ1NzAtYWI1NC1lYzI1NTdiYWI4MjciLCJleHAiOjE1ODY2ODM1ODYsImF1dGhvcml0aWVzIjpbInAxIl0sImp0aSI6IjA4NDM1OGUxLWMzMjQtNGE3MS1hZTA0LTNiZjc5ZDEwMjZhNyIsImNsaWVudF9pZCI6ImMxIn0.dPDDPuQAI0FR35V2nVzKOam8CqshOm6udIH2LHvitR4",
+    "expires_in": 7199,
+    "scope": "all",
+    "jti": "9f700257-c81e-4570-ab54-ec2557bab827"
 }
 ```
 
