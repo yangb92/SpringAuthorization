@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 
 /**
  * 资源解析服务配置
@@ -21,14 +22,20 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServer extends ResourceServerConfigurerAdapter {
 
+    private String SIGN_KEY = "123";
+
     // 资源ID
     public static final String RESOURCE_ID = "res1";
 
     @Autowired
+    private TokenStore tokenStore;
+
+/*
+    @Autowired
     private ResourceServerTokenServices tokenServices;
 
     // 资源令牌解析服务
-    @Bean
+   @Bean
     public ResourceServerTokenServices tokenServices() {
         // 使用远程服务请求授权服务器校验Token, 必须指定授权服务器的 url.client_id,client_secret
         RemoteTokenServices services = new RemoteTokenServices();
@@ -36,7 +43,7 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
         services.setClientId("c1");
         services.setClientSecret("secret");
         return services;
-    }
+    }*/
 
     /**
      * 资源服务安全配置
@@ -46,7 +53,8 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.resourceId(RESOURCE_ID)
-                .tokenServices(tokenServices) //验证令牌的服务
+//                .tokenServices(tokenServices) //验证令牌的服务
+                .tokenStore(tokenStore)
                 .stateless(true);
     }
 

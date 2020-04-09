@@ -1,11 +1,8 @@
-package com.yangb.security.uaa.config;
+package com.yangb.security.order.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
@@ -18,10 +15,9 @@ public class TokenConfig {
     private String SIGN_KEY = "123";
 
     @Bean
-    @Autowired
-    public TokenStore tokenStore(JwtAccessTokenConverter accessTokenConverter) {
+    public TokenStore tokenStore() {
         // JWT 令牌存储方案
-        return new JwtTokenStore(accessTokenConverter);
+        return new JwtTokenStore(accessTokenConverter());
     }
 
     // 令牌转换器

@@ -3,6 +3,7 @@ package com.yangb.security.uaa.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,7 +17,11 @@ import org.springframework.security.oauth2.provider.code.AuthorizationCodeServic
 import org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+
+import java.util.Arrays;
 
 /**
  * Created by yangb on 2020/4/9
@@ -35,25 +40,9 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     private AuthenticationManager authenticationManager;
     @Autowired
     private AuthorizationServerTokenServices tokenServices;
+    @Autowired
+    private JwtAccessTokenConverter accessTokenConverter;
 
-    // 令牌访问安全约束
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security
-                .tokenKeyAccess("permitAll()")  //oauth/token_key 是公开
-                .checkTokenAccess("permitAll()")    //oauth/check_token 公开
-                .allowFormAuthenticationForClients(); //表单认证
-
-    }
-
-    // 令牌访问端点
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager) //认证管理器
-                .authorizationCodeServices(authorizationCodeServices) // 授权码服务
-                .tokenServices(tokenServices) // 令牌管理服务
-                .allowedTokenEndpointRequestMethods(HttpMethod.POST);
-    }
 
     // 配置授权码服务
     @Bean
@@ -70,6 +59,10 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
         services.setClientDetailsService(clientDetailsService); // 客户端详情服务
         services.setSupportRefreshToken(true); // 支持令牌刷新
         services.setTokenStore(tokenStore); // 令牌存储策略
+        // 令牌增强
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(accessTokenConverter));
+        services.setTokenEnhancer(tokenEnhancerChain);
         services.setAccessTokenValiditySeconds(7200); // 令牌有效期2小时
         services.setRefreshTokenValiditySeconds(259200); // 刷新令牌默认有效期3天
         return services;
@@ -87,4 +80,24 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
                 .autoApprove(false) // false 跳转到授权页面
                 .redirectUris("http://www.baidu.com"); //授权回调地址
     }
+
+    // 令牌访问端点
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints.authenticationManager(authenticationManager) //认证管理器
+                .authorizationCodeServices(authorizationCodeServices) // 授权码服务
+                .tokenServices(tokenServices) // 令牌管理服务
+                .allowedTokenEndpointRequestMethods(HttpMethod.POST);
+    }
+
+    // 令牌访问安全约束
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security
+                .tokenKeyAccess("permitAll()")  //oauth/token_key 是公开
+                .checkTokenAccess("permitAll()")    //oauth/check_token 公开
+                .allowFormAuthenticationForClients(); //表单认证
+
+    }
+
 }
