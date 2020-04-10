@@ -5,9 +5,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
@@ -17,6 +20,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.util.Arrays;
 
 /**
@@ -30,9 +34,9 @@ public class TokenConfig {
     @Resource
     private TokenStore tokenStore;
     @Resource
-    private ClientDetailsService clientDetailsService;
-    @Resource
     private JwtAccessTokenConverter accessTokenConverter;
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
     @Bean
     public TokenStore tokenStore() {
@@ -51,16 +55,17 @@ public class TokenConfig {
 
     // 配置授权码服务
     @Bean
-    public AuthorizationCodeServices authorizationCodeServices() {
+    public AuthorizationCodeServices authorizationCodeServices(DataSource dataSource) {
         // 设置授权码模式的授权码如何存取,暂时采用内存方式
-        return new InMemoryAuthorizationCodeServices();
+//        return new InMemoryAuthorizationCodeServices();
+        return new JdbcAuthorizationCodeServices(dataSource);
     }
 
 
     // 令牌管理服务
     @Bean
-    @DependsOn({"clientDetailsService","tokenStore","accessTokenConverter"})
-    public AuthorizationServerTokenServices tokenServices() {
+    @DependsOn({"tokenStore","accessTokenConverter"})
+    public AuthorizationServerTokenServices tokenServices(ClientDetailsService clientDetailsService) {
         DefaultTokenServices services = new DefaultTokenServices();
         services.setClientDetailsService(clientDetailsService); // 客户端详情服务
         services.setSupportRefreshToken(true); // 支持令牌刷新
@@ -72,5 +77,13 @@ public class TokenConfig {
         services.setAccessTokenValiditySeconds(7200); // 令牌有效期2小时
         services.setRefreshTokenValiditySeconds(259200); // 刷新令牌默认有效期3天
         return services;
+    }
+
+    // 客户端信息配置到数据库
+    @Bean
+    public ClientDetailsService clientDetailsService(DataSource dataSource) {
+        ClientDetailsService clientDetailsService = new JdbcClientDetailsService(dataSource);
+        ((JdbcClientDetailsService) clientDetailsService).setPasswordEncoder(passwordEncoder);
+        return clientDetailsService;
     }
 }
